@@ -1,0 +1,35 @@
+{
+  "name": "aviation-poster",
+  "version": "1.0.0",
+  "description": "Automated video clipping and posting system for aviation content",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "schedule": "node dist/index.js --schedule"
+  },
+  "keywords": [
+    "youtube",
+    "instagram",
+    "tiktok",
+    "automation",
+    "video-processing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "openai": "^4.20.1",
+    "puppeteer": "^21.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
+

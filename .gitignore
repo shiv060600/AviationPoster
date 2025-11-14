@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+*.log
+downloads/
+clips/
+outputs/
+.yt-dlp/
+
