@@ -6,4 +6,4 @@ downloads/
 clips/
 outputs/
 .yt-dlp/
-
+.env.local
