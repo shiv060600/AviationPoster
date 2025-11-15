@@ -25,7 +25,7 @@ export const config = {
     maxDuration: parseInt(process.env.MAX_CLIP_DURATION || '60'),
     minDuration: parseInt(process.env.MIN_CLIP_DURATION || '15'),
     format: process.env.CLIP_FORMAT || 'mp4',
-    quality: process.env.VIDEO_QUALITY || '720p',
+    quality: process.env.VIDEO_QUALITY || '1080p',
     maxClips: 50, // Maximum number of clips to keep
   },
   paths: {

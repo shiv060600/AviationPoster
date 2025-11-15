@@ -48,7 +48,6 @@ export class YouTubeDownloader {
           const duration = videoData.duration || 0;
           const uploadDate = videoData.upload_date || '';
           const description = videoData.description || '';
-          
           const times = description ? this.parseDescription(description) : [];
           
           if (id && title) {
@@ -100,14 +99,27 @@ export class YouTubeDownloader {
       
       const quality = config.video.quality.replace('p', '');
       
-      // Get the best stream URL using yt-dlp
+      // Get the best stream URLs using yt-dlp (returns video and audio separately)
       const getUrlCommand = `yt-dlp -f "bestvideo[height<=${quality}]+bestaudio/best[height<=${quality}]" -g "${videoUrl}"`;
-      const { stdout: streamUrl } = await execAsync(getUrlCommand);
-      const url = streamUrl.trim().split('\n')[0]; // Get first URL (video or audio)
+      const { stdout: streamUrls } = await execAsync(getUrlCommand);
+      const urls = streamUrls.trim().split('\n').filter(url => url.trim());
       
-      // Use ffmpeg to download just the segment
-      // -ss: start time, -t: duration, -c copy: copy codecs (faster)
-      const downloadCommand = `ffmpeg -ss ${startTime} -i "${url}" -t ${durationStr} -c:v libx264 -c:a aac -preset fast -movflags +faststart -y "${outputPath}"`;
+      // If we got separate video and audio streams, combine them
+      // If we got a single combined stream, use that
+      let downloadCommand: string;
+      
+      if (urls.length >= 2) {
+        // Separate video and audio streams - combine them
+        const videoStreamUrl = urls[0];
+        const audioStreamUrl = urls[1];
+        downloadCommand = `ffmpeg -ss ${startTime} -i "${videoStreamUrl}" -ss ${startTime} -i "${audioStreamUrl}" -t ${durationStr} -c:v libx264 -c:a aac -preset fast -movflags +faststart -map 0:v:0 -map 1:a:0 -y "${outputPath}"`;
+      } else if (urls.length === 1) {
+        // Single combined stream (video + audio)
+        const streamUrl = urls[0];
+        downloadCommand = `ffmpeg -ss ${startTime} -i "${streamUrl}" -t ${durationStr} -c:v libx264 -c:a aac -preset fast -movflags +faststart -y "${outputPath}"`;
+      } else {
+        throw new Error('No stream URLs found');
+      }
       
       await execAsync(downloadCommand);
       
@@ -168,7 +180,7 @@ export class YouTubeDownloader {
 
     const pairs: Array<ClipTimestamp> = [];
     for(let i = 0; i < timestamps.length - 1; i++){
-      pairs.push({start: timestamps[i], end: timestamps[i+1]});
+      pairs.push({start: (timestamps[i] + 1), end: (timestamps[i+1] - 5) }); //+1 start -5 end seconds: usually the timstamps are listed a bit further than the actual clip
     }
 
     return pairs;
