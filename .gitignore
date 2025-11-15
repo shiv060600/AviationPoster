@@ -7,3 +7,7 @@ clips/
 outputs/
 .yt-dlp/
 .env.local
+.env
+.env.local
+.env.*.local
+*.env
