@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { config } from '../config';
+import { config } from '../config.js';
 
 export type ProcessFunction = () => Promise<void>;
 

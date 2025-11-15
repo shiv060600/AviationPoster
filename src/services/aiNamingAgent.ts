@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { config } from '../config';
-import { VideoClip } from '../types';
+import { config } from '../config.js';
+import { VideoClip } from '../types.js';
 
 export class AINamingAgent {
   private openai: OpenAI | null = null;

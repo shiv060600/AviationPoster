@@ -3,9 +3,9 @@ import { AINamingAgent } from './services/aiNamingAgent.js';
 import { SocialUploader } from './services/socialUploader.js';
 import { Scheduler } from './services/scheduler.js';
 import { ClipQueueManager } from './services/clipQueueManager.js';
-import { VideoClip, ClipTimestamp, QueuedClip } from './types';
+import { VideoClip, ClipTimestamp, QueuedClip } from './types.js';
 import { getDirectoryItems, deleteFile } from './utils/fileUtils.js';
-import { config } from './config';
+import { config } from './config.js';
 import { validateDependencies } from './utils/checkDependencies.js';
 
 /**

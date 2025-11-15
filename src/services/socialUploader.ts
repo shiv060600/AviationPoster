@@ -1,5 +1,5 @@
-import { config } from '../config';
-import { VideoClip, UploadResult } from '../types';
+import { config } from '../config.js';
+import { VideoClip, UploadResult } from '../types.js';
 import { existsSync } from 'fs';
 import puppeteer, { Browser, Page } from 'puppeteer';
 

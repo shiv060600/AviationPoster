@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { config } from '../config';
-import { ClipQueue, QueuedClip, ClipTimestamp } from '../types';
+import { config } from '../config.js';
+import { ClipQueue, QueuedClip, ClipTimestamp } from '../types.js';
 
 export class ClipQueueManager {
   private queuePath: string;

@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'fs';
 import { join } from 'path';
-import { DirectoryItem } from '../types';
+import { DirectoryItem } from '../types.js';
 
 export function ensureDirectoryExists(dirPath: string): void {
   if (!existsSync(dirPath)) {

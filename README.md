@@ -80,10 +80,6 @@ npm run build
 ```bash
 npm start
 ```
-or
-```bash
-npm run dev  # Development mode with watch
-```
 
 ### Run as Scheduled Service
 ```bash
@@ -200,11 +196,4 @@ which ffmpeg  # Should show path to ffmpeg
 - Check API key has sufficient credits
 - Review OpenAI API status
 
-## License
-
-MIT
-
-## Contributing
-
-Contributions welcome! Please open an issue or submit a pull request.
 

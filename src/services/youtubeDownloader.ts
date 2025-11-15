@@ -1,7 +1,7 @@
 import { join } from 'path';
-import { config } from '../config';
-import { YouTubeVideo, ClipTimestamp } from '../types';
-import { ensureDirectoryExists, getClipFilename } from '../utils/fileUtils';
+import { config } from '../config.js';
+import { YouTubeVideo, ClipTimestamp } from '../types.js';
+import { ensureDirectoryExists, getClipFilename } from '../utils/fileUtils.js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { randomUUID } from 'crypto';
@@ -21,27 +21,49 @@ export class YouTubeDownloader {
    */
   async getLatestVideos(limit: number = 5): Promise<YouTubeVideo[]> {
     try {
-      // Use yt-dlp to get channel videos
+      // Step 1: Get video IDs quickly with flat-playlist
       const channelUrl = config.youtube.channelUrl;
-      const command = `yt-dlp --flat-playlist --print "%(id)s|%(title)s|%(duration)s|%(upload_date)s|%(description)s" --playlist-end ${limit} "${channelUrl}"`;
+      const playlistCommand = `yt-dlp --flat-playlist --print "%(id)s" --playlist-end ${limit} "${channelUrl}"`;
       
-      const { stdout } = await execAsync(command);
-      const lines = stdout.trim().split('\n').filter(line => line.trim());
+      const { stdout: playlistOutput } = await execAsync(playlistCommand);
+      const videoIds = playlistOutput.trim().split('\n').filter(id => id.trim());
       
+      if (videoIds.length === 0) {
+        return [];
+      }
+
+      // Step 2: Fetch full metadata (including description) for each video
       const videos: YouTubeVideo[] = [];
       
-      for (const line of lines) {
-        const [id, title, duration, uploadDate, description] = line.split('|') as [string, string, string, string, string];
-        const times = description ? this.parseDescription(description) : [];
-        if (id && title) {
-          videos.push({
-            id: id.trim(),
-            title: title.trim(),
-            url: `https://www.youtube.com/watch?v=${id.trim()}`,
-            duration: this.parseDuration(duration?.trim() || '0'),
-            timestamps: times,
-            uploadDate: uploadDate?.trim() || new Date().toISOString().split('T')[0],
-          });
+      for (const videoId of videoIds) {
+        try {
+          const videoUrl = `https://www.youtube.com/watch?v=${videoId.trim()}`;
+          const metadataCommand = `yt-dlp --dump-json --no-playlist "${videoUrl}"`;
+          
+          const { stdout: metadataJson } = await execAsync(metadataCommand);
+          const videoData = JSON.parse(metadataJson);
+          
+          const id = videoData.id;
+          const title = videoData.title || '';
+          const duration = videoData.duration || 0;
+          const uploadDate = videoData.upload_date || '';
+          const description = videoData.description || '';
+          
+          const times = description ? this.parseDescription(description) : [];
+          
+          if (id && title) {
+            videos.push({
+              id: id.trim(),
+              title: title.trim(),
+              url: videoUrl,
+              duration: this.parseDuration(duration.toString()),
+              timestamps: times,
+              uploadDate: uploadDate ? uploadDate.substring(0, 10) : new Date().toISOString().split('T')[0],
+            });
+          }
+        } catch (parseError) {
+          console.error(`Error fetching metadata for video ${videoId}:`, parseError);
+          continue;
         }
       }
       

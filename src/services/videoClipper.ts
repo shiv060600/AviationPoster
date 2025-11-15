@@ -2,9 +2,9 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { existsSync } from 'fs';
-import { config } from '../config';
-import { ClipTimestamp, VideoClip } from '../types';
-import { ensureDirectoryExists, getClipFilename } from '../utils/fileUtils';
+import { config } from '../config.js';
+import { ClipTimestamp, VideoClip } from '../types.js';
+import { ensureDirectoryExists, getClipFilename } from '../utils/fileUtils.js';
 import { randomUUID } from 'crypto';
 
 const execAsync = promisify(exec);
@@ -73,7 +73,7 @@ export class VideoClipper {
         startTime: start,
         endTime: end,
         duration: duration,
-        title: timestamps.title || originalTitle,
+        title: originalTitle,
         createdAt: new Date(),
       };
     } catch (error) {
